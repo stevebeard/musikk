@@ -19,8 +19,9 @@ class TestPlayer(unittest.TestCase):
         self.instance.close()
 
     def testPlay(self):
-        self.instance.play(test_file_uri)
-        time.sleep(5)
+        self.instance.play_uri(test_file_uri)
+        # uncomment to hear audio output
+        # time.sleep(5)
 
 if __name__ == '__main__':
     unittest.main()
