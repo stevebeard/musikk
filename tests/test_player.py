@@ -22,7 +22,7 @@ class TestPlayer(unittest.TestCase):
     def test_play_uri(self):
         self.instance.play_uri(get_test_file_uri('test.mp3'))
         # uncomment to hear audio output
-        # time.sleep(5)
+        time.sleep(5)
 
     def test_play_uri_when_playing(self):
         self.instance.play_uri(get_test_file_uri('test.mp3'))
