@@ -1,2 +1,2 @@
 #!/usr/bin/env bash
-python3 -m unittest discover -s tests/ -p 'test_*.py' -v
+python3 -m unittest discover -s musikk/test/ -p 'test_*.py' -v

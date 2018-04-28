@@ -5,7 +5,7 @@ import os
 dir_path = os.path.dirname(os.path.realpath(__file__))
 import pathlib
 
-import player
+from musikk import player
 
 def get_test_file_uri(filename):
     filepath = os.path.join(dir_path, filename)

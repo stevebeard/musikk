@@ -4,7 +4,7 @@ import os
 import pathlib
 import sys
 
-import player
+from musikk import player
 
 running = True
 playing = True
