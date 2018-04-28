@@ -31,8 +31,6 @@ class Player():
         # GObject.threads_init() # no longer required
         # init gstreamer
         Gst.init(None)
-    
-    def play_uri(self, uri):
         # create gstreamer playbin
         self.playbin = Gst.ElementFactory.make('playbin', None)
         if self.playbin is None:
@@ -43,13 +41,33 @@ class Player():
         self.bus = self.playbin.get_bus()
         self.bus.add_signal_watch()
         self.bus.connect('message', bus_call, self.loop)
+        self.playthread = None
+    
+    def play_uri(self, uri):
+        if self.playthread is not None:
+            # stop existing
+            self.stop()
+        else:
+            # first time - create gstreamer event thread
+            self.playthread = threading.Thread(target=gst_event_loop, args=(self.loop, self.playbin,))
+            self.playthread.start()
         self.playbin.set_property('uri', uri)
         self.playbin.set_state(Gst.State.PLAYING)
-        self.playthread = threading.Thread(target=gst_event_loop, args=(self.loop, self.playbin,))
-        self.playthread.start()
+
+    def set_next_uri(self, uri):
+        self.playbin.set_property('uri', uri)
+
+    def play(self):
+        self.playbin.set_state(Gst.State.PLAYING)
+
+    def pause(self):
+        self.playbin.set_state(Gst.State.PAUSED)
+
+    def stop(self):
+        self.playbin.set_state(Gst.State.NULL)
     
     def close(self):
-        self.playbin.set_state(Gst.State.NULL)
+        self.stop()
         self.loop.quit()
         self.playthread.join()
 

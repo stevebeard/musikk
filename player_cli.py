@@ -6,6 +6,10 @@ import sys
 
 import player
 
+running = True
+playing = True
+_player = player.Player()
+
 def main():
     parser = argparse.ArgumentParser(
         prog='Musikk',
@@ -15,17 +19,47 @@ def main():
     args = parser.parse_args()
     # print(args)
     uri = pathlib.Path(os.path.abspath(args.uri)).as_uri()
-    p = player.Player()
-    p.play_uri(uri)
-    running = True
+    _player.play_uri(uri)
     while running:
-        command = input()
-        if command is 'q':
+        command = input('> ')
+        if command in ['q','quit']:
             print('Quitting...')
-            p.close()
-            running = False
+            close()
+        elif command is 'p':
+            if playing:
+                pause()
+            else:
+                play()
+        elif command == 'pause':
+            pause()
+        elif command == 'play':
+           play()
+        elif command in ['s', 'stop']:
+            stop()
         else:
-            print('Unrecognised Command: ' + command)
+            print('Unrecognised Command: ' + command) 
+
+def play():
+    _player.play()
+    global playing
+    playing = True
+
+def pause():
+    _player.pause()
+    global playing
+    playing = False
+
+def stop():
+    _player.stop()
+    global playing
+    playing = False
+
+def close():
+    _player.close()
+    global playing
+    global running
+    playing = False
+    running = False
 
 if __name__ == '__main__':
     main()
