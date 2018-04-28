@@ -5,7 +5,7 @@ import os
 dir_path = os.path.dirname(os.path.realpath(__file__))
 import pathlib
 
-from player import player
+import player
 
 test_filepath = os.path.join(dir_path, 'test.mp3')
 test_file_uri = pathlib.Path(test_filepath).as_uri()
