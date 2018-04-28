@@ -64,10 +64,11 @@ class Player():
         self.playbin.set_state(Gst.State.PAUSED)
 
     def stop(self):
-        self.playbin.set_state(Gst.State.NULL)
+        self.playbin.set_state(Gst.State.READY)
     
     def close(self):
-        self.stop()
+        self.playbin.set_state(Gst.State.NULL)
         self.loop.quit()
-        self.playthread.join()
+        if self.playthread is not None:
+            self.playthread.join()
 
