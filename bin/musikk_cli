@@ -4,7 +4,7 @@ import os
 import pathlib
 import sys
 
-from musikk import player
+from musikk import player, metadata
 
 running = True
 playing = True
@@ -15,11 +15,14 @@ def main():
         prog='Musikk',
         description='A simple command line music player.'
     )
-    parser.add_argument('uri')
+    parser.add_argument('filepath')
     args = parser.parse_args()
     # print(args)
-    uri = pathlib.Path(os.path.abspath(args.uri)).as_uri()
+    absfilepath = os.path.abspath(args.filepath)
+    uri = pathlib.Path(absfilepath).as_uri()
     _player.play_uri(uri)
+    track = metadata.get_track_metadata(absfilepath)
+    print_track_info(track)
     while running:
         command = input('> ')
         if command in ['q','quit']:
@@ -37,7 +40,19 @@ def main():
         elif command in ['s', 'stop']:
             stop()
         else:
-            print('Unrecognised Command: ' + command) 
+            print('Unrecognised Command: ' + command)
+
+def print_track_info(track):
+    print('{} - {} - {}'.format(
+        check_metadata(track.title), 
+        check_metadata(track.artist), 
+        check_metadata(track.album)
+    ))
+
+def check_metadata(field):
+    if field == '':
+        return 'Unknown'
+    return field
 
 def play():
     _player.play()
