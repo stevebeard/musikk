@@ -15,10 +15,12 @@ def main():
         prog='Musikk',
         description='A simple command line music player.'
     )
-    parser.add_argument('filepath')
+    parser.add_argument('filepath', nargs='+')
     args = parser.parse_args()
     # print(args)
-    absfilepath = os.path.abspath(args.filepath)
+    queue = args.filepath
+    first = queue[0]
+    absfilepath = os.path.abspath(first)
     uri = pathlib.Path(absfilepath).as_uri()
     _player.play_uri(uri)
     track = metadata.get_track_metadata(absfilepath)
