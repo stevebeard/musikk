@@ -4,11 +4,12 @@ import os
 import pathlib
 import sys
 
-from musikk import player, metadata
+from musikk import player, metadata, queue
 
 running = True
 playing = True
 _player = player.Player()
+_queue = queue.Queue()
 
 def main():
     parser = argparse.ArgumentParser(
@@ -18,12 +19,13 @@ def main():
     parser.add_argument('filepath', nargs='+')
     args = parser.parse_args()
     # print(args)
-    queue = args.filepath
-    first = queue[0]
-    absfilepath = os.path.abspath(first)
-    uri = pathlib.Path(absfilepath).as_uri()
-    _player.play_uri(uri)
-    track = metadata.get_track_metadata(absfilepath)
+    absfilepaths = []
+    for filepath in args.filepath:
+        absfilepaths.append(os.path.abspath(filepath))
+    _queue.add_items(absfilepaths)
+    first = _queue.get_current()
+    _player.play_uri(__to_uri(first))
+    track = metadata.get_track_metadata(first)
     print_track_info(track)
     while running:
         command = input('> ')
@@ -38,9 +40,13 @@ def main():
         elif command == 'pause':
             pause()
         elif command == 'play':
-           play()
+            play()
         elif command in ['s', 'stop']:
             stop()
+        elif command in ['N', 'next']:
+            next()
+        elif command in ['P', 'prev']:
+            previous()
         else:
             print('Unrecognised Command: ' + command)
 
@@ -66,6 +72,20 @@ def pause():
     global playing
     playing = False
 
+def next():
+    _next = _queue.next()
+    if _next is not None:
+        _player.play_uri(__to_uri(_next))
+        track = metadata.get_track_metadata(_next)
+        print_track_info(track)
+
+def previous():
+    _previous = _queue.previous()
+    if _previous is not None:
+        _player.play_uri(__to_uri(_previous))
+        track = metadata.get_track_metadata(_previous)
+        print_track_info(track)
+
 def stop():
     _player.stop()
     global playing
@@ -77,6 +97,9 @@ def close():
     global running
     playing = False
     running = False
+
+def __to_uri(filepath):
+    return pathlib.Path(filepath).as_uri()
 
 if __name__ == '__main__':
     main()
